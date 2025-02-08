@@ -62,7 +62,7 @@ For Software:
 ### Project Demo
 
 # Additional Demos
-https://ourscreen.vercel.app/frontend
+https://ourscreen.vercel.app
 
 ## Team Contributions
 - Member 1: Sreelakshmi S L - GEC KOZHIKODE
