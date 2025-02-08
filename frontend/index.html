@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binge watch on our screen with your loved ones</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #e765d6;
+        }
+        video {
+            width: 80%;
+            max-width: 800px;
+            border: 2px solid #3d3c3c;
+        }
+        .controls, .room-controls {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            background: #0b5804;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #ccc;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+        }
+        .chat-box {
+            width: 80%;
+            max-width: 500px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+            height: 150px;
+            overflow-y: auto;
+        }
+        .chat-box p {
+            margin: 5px 0;
+        }
+        .chat-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .chat-controls input {
+            width: 80%;
+        }
+        .chat-controls button {
+            width: 18%;
+        }
+    </style>
+</head>
+<body>
+    <h3>Watch Video Simultaneously</h3>
+    
+    <div class="room-controls">
+        <input type="text" id="roomId" placeholder="Enter Room ID" />
+        <button id="joinRoomBtn">Join Room</button>
+        <p>Current Room: <span id="currentRoom">Not connected</span></p>
+    </div>
+
+    <input type="text" id="videoUrl" placeholder="Paste MP4 URL here" />
+    <button id="loadVideoBtn">Load Video</button>
+    <video id="video" controls></video>
+    <div class="controls">
+        <button id="playBtn" disabled>Play</button>
+        <button id="pauseBtn" disabled>Pause</button>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-controls">
+        <input type="text" id="chatInput" placeholder="Type your message..." />
+        <button id="sendMessageBtn">Send</button>
+    </div>
+
+    <script>
+        const socket = io("http://localhost:4000"); // Replace with your backend server URL
+        const video = document.getElementById("video");
+        const playBtn = document.getElementById("playBtn");
+        const pauseBtn = document.getElementById("pauseBtn");
+        const loadVideoBtn = document.getElementById("loadVideoBtn");
+        const videoUrlInput = document.getElementById("videoUrl");
+        const chatBox = document.getElementById("chatBox");
+        const chatInput = document.getElementById("chatInput");
+        const sendMessageBtn = document.getElementById("sendMessageBtn");
+        const roomIdInput = document.getElementById("roomId");
+        const joinRoomBtn = document.getElementById("joinRoomBtn");
+        const currentRoomDisplay = document.getElementById("currentRoom");
+        
+        let currentRoom = "";
+
+        joinRoomBtn.addEventListener("click", () => {
+            const room = roomIdInput.value.trim();
+            if (room) {
+                socket.emit("joinRoom", { roomId: room });
+                currentRoom = room;
+                currentRoomDisplay.textContent = room;
+            }
+        });
+
+        socket.on("play", () => video.play());
+        socket.on("pause", () => video.pause());
+        socket.on("seek", (time) => video.currentTime = time);
+
+        playBtn.addEventListener("click", () => {
+            socket.emit("play", currentRoom);
+            video.play();
+        });
+
+        pauseBtn.addEventListener("click", () => {
+            socket.emit("pause", currentRoom);
+            video.pause();
+        });
+
+        video.addEventListener("seeked", () => {
+            socket.emit("seek", { time: video.currentTime, room: currentRoom });
+        });
+
+        loadVideoBtn.addEventListener("click", () => {
+            const videoUrl = videoUrlInput.value.trim();
+            if (videoUrl) {
+                video.src = videoUrl;
+                video.load();
+                video.play();
+                playBtn.disabled = false;
+                pauseBtn.disabled = false;
+            } else {
+                alert("Please paste a valid MP4 URL.");
+            }
+        });
+
+        sendMessageBtn.addEventListener("click", () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                socket.emit("chatMessage", { message, room: currentRoom });
+                chatInput.value = "";
+                displayMessage(`You: ${message}`);
+            }
+        });
+
+        socket.on("chatMessage", ({ message }) => displayMessage(`Other: ${message}`));
+
+        function displayMessage(message) {
+            const messageElement = document.createElement("p");
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
