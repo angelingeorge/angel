@@ -1,0 +1,14 @@
+{
+  "name":"our-screen",
+  "version": "0.01.0",
+  "scripts": {
+    "start": "node server.js",
+    "dev":"nodeman server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
+  }
+}
