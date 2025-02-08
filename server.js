@@ -8,7 +8,7 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(cors());
-// app.use(express.static("./static")); // Serve frontend files
+app.use(express.static("./public")); // Serve frontend files
 
 let rooms = {};
 
