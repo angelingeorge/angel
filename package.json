@@ -3,7 +3,7 @@
   "version": "0.01.0",
   "scripts": {
     "start": "node server.js",
-    "dev":"nodeman server.js"
+    "dev":"nodemon server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
