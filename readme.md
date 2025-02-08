@@ -10,7 +10,7 @@
 - Member 2: Carmel Antony - GEC KOZHIKODE
 - Member 3: Angelin George - GEC KOZHIKODE
 ### Hosted Project Link
-https://ourscreen.vercel.app/frontend
+https://ourscreen.onrender.com/
 
 ### Project Description
 An online website for watching videos and chat simultaneously at different places.
@@ -62,7 +62,7 @@ For Software:
 ### Project Demo
 
 # Additional Demos
-https://ourscreen.vercel.app
+https://ourscreen.onrender.com
 
 ## Team Contributions
 - Member 1: Sreelakshmi S L - GEC KOZHIKODE
